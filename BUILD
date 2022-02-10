@@ -95,6 +95,7 @@ container_image(
     name = "sourcemod_container",
     base = ":server_base",
     files = [
+        ":metamod.vdf",
         "@metamod//file",
         "@sourcemod//file",
     ],
@@ -116,6 +117,7 @@ container_run_and_extract(
         "mv plugins/disabled/mapchooser.smx plugins/mapchooser.smx",
         "mv plugins/disabled/rockthevote.smx plugins/rockthevote.smx",
         "mv plugins/disabled/nominations.smx plugins/nominations.smx",
+        "mv /metamod.vdf /opt/game/hidden/addons/metamod.vdf",
         "chown -R nobody:root /opt",
         "tar -czvf /archive.tar.gz /opt",
     ],
