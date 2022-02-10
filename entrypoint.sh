@@ -12,7 +12,7 @@ ls hidden/maps/*.bsp | grep -v tutorial | sed -e 's/.*\/\([^\/]*\).bsp/\1/' > hi
 # Update maplists
 sed -i 's|addons/sourcemod/configs/adminmenu_maplist.ini|default|g' hidden/addons/sourcemod/configs/maplists.cfg
 
-# Set Terminal
+# Set terminal
 export TERM=xterm
 
 # Start display server
