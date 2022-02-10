@@ -4,12 +4,13 @@
 
 [ -z "${HIDDEN_MOTD}" ] || echo "${HIDDEN_MOTD}" > hidden/motd.txt
 
-WINEARCH="win32" wine winecfg
+#  Hack to make auth plugin load properly
+cp hidden/addons/sourcemod/extensions/auth_by_steam_group.ext.1.ep1.dll hidden/addons/sourcemod/extensions/auth_by_steam_group.ext.dll
 
 Xvfb :1 -screen 0 800x600x16 &
-
 sleep 1s
 
+WINEARCH="win32" wine winecfg
 DISPLAY=":1.0" wine start srcds.exe \
     -game hidden \
     -port "$HIDDEN_PORT" \
