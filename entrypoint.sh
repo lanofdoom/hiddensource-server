@@ -1,5 +1,4 @@
 #!/bin/bash -ue
-
 [ -z "${HIDDEN_ADMIN}" ] || echo "${HIDDEN_ADMIN} \"99:z\"" > hidden/addons/sourcemod/configs/admins_simple.ini
 
 [ -z "${HIDDEN_MOTD}" ] || echo "${HIDDEN_MOTD}" > hidden/motd.txt
@@ -12,6 +11,9 @@ ls hidden/maps/*.bsp | grep -v tutorial | sed -e 's/.*\/\([^\/]*\).bsp/\1/' > hi
 
 # Update maplists
 sed -i 's|addons/sourcemod/configs/adminmenu_maplist.ini|default|g' hidden/addons/sourcemod/configs/maplists.cfg
+
+# Set Terminal
+export TERM=xterm
 
 # Start display server
 Xvfb :1 -screen 0 800x600x16 &
