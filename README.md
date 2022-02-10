@@ -3,7 +3,7 @@ Docker image for a private, preconfigured private The Hidden: Source server as
 used by the LAN of DOOM.
 
 # Installation
-Run ``docker pull ghcr.io/lanofdoom/counterstrikesource-server:latest``
+Run ``docker pull ghcr.io/lanofdoom/hiddensource-server:latest``
 
 # Installed Addons
 *  LAN of DOOM Authenticate by Steam Group
