@@ -12,7 +12,6 @@ download_pkgs(
     image_tar = "@base_image//image",
     packages = [
         "ca-certificates",
-        "libcurl4",
         "wine",
         "xvfb",
     ],
