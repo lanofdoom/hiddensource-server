@@ -7,9 +7,17 @@
 #  Hack to make auth plugin load properly
 cp hidden/addons/sourcemod/extensions/auth_by_steam_group.ext.1.ep1.dll hidden/addons/sourcemod/extensions/auth_by_steam_group.ext.dll
 
+# Generate mapcycle
+ls hidden/maps/*.bsp | grep -v tutorial | sed -e 's/.*\/\([^\/]*\).bsp/\1/' > hidden/cfg/mapcycle.txt
+
+# Update maplists
+sed -i 's|addons/sourcemod/configs/adminmenu_maplist.ini|default|g' hidden/addons/sourcemod/configs/maplists.cfg
+
+# Start display server
 Xvfb :1 -screen 0 800x600x16 &
 sleep 1s
 
+# Configure wine and start game
 WINEARCH="win32" wine winecfg
 DISPLAY=":1.0" wine start srcds.exe \
     -game hidden \
