@@ -22,36 +22,14 @@ container_deps()
 load("@io_bazel_rules_docker//container:container.bzl", "container_pull")
 
 #
-# Steam Dependencies
-#
-
-git_repository(
-    name = "com_github_lanofdoom_steamcmd",
-    commit = "bbeb7373f047aa3271d9f3442bc7985a6049f879",
-    remote = "https://github.com/lanofdoom/steamcmd",
-)
-
-load("@com_github_lanofdoom_steamcmd//:repositories.bzl", "steamcmd_repos")
-
-steamcmd_repos()
-
-load("@com_github_lanofdoom_steamcmd//:deps.bzl", "steamcmd_deps")
-
-steamcmd_deps()
-
-load("@com_github_lanofdoom_steamcmd//:nugets.bzl", "steamcmd_nugets")
-
-steamcmd_nugets()
-
-#
 # Server Dependencies
 #
 
 http_file(
     name = "auth_by_steam_group",
-    downloaded_file_path = "auth_by_steam_group.tar.gz",
-    sha256 = "2b912b1df5331cf58868df283fdcf3e226b7a50e0a2170f7fd0d0581b18b1fdc",
-    urls = ["https://lanofdoom.github.io/auth-by-steam-group/releases/v2.2.0/auth_by_steam_group.tar.gz"],
+    downloaded_file_path = "auth_by_steam_group.zip",
+    sha256 = "102ac24bc229f1e08164d2b63358703106f1a6bd19d9c6cd47936b259c61873e",
+    urls = ["https://lanofdoom.github.io/auth-by-steam-group/releases/v2.3.0/auth_by_steam_group.zip"],
 )
 
 http_file(
@@ -63,16 +41,16 @@ http_file(
 
 http_file(
     name = "metamod",
-    downloaded_file_path = "metamod.tar.gz",
-    sha256 = "b7fc903755bb3f273afd797b36e94844b828e721d291d2a7519eecad3fa8486c",
-    urls = ["https://mms.alliedmods.net/mmsdrop/1.11/mmsource-1.11.0-git1145-linux.tar.gz"],
+    downloaded_file_path = "metamod.zip",
+    sha256 = "764ef206a00768dc6810ff7344dfabd7b2d8ab4b3d426c5fad49d4818ac3228d",
+    urls = ["https://mms.alliedmods.net/mmsdrop/1.11/mmsource-1.11.0-git1145-windows.zip"],
 )
 
 http_file(
     name = "sourcemod",
-    downloaded_file_path = "sourcemod.tar.gz",
-    sha256 = "da1fa6c77f3268b6eb8bbdb97e9bf1d03f4084b3f0d1933e195752b44332d3b0",
-    urls = ["https://sm.alliedmods.net/smdrop/1.10/sourcemod-1.10.0-git6528-linux.tar.gz"],
+    downloaded_file_path = "sourcemod.zip",
+    sha256 = "1361a2df2b98658c88adb1793fdc152926180ed6c04f7d36457b7de4f8c0c415",
+    urls = ["https://sm.alliedmods.net/smdrop/1.10/sourcemod-1.10.0-git6528-windows.zip"],
 )
 
 #

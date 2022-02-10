@@ -2,7 +2,10 @@ load("@io_bazel_rules_docker//container:container.bzl", "container_image", "cont
 load("@io_bazel_rules_docker//docker/package_managers:download_pkgs.bzl", "download_pkgs")
 load("@io_bazel_rules_docker//docker/package_managers:install_pkgs.bzl", "install_pkgs")
 load("@io_bazel_rules_docker//docker/util:run.bzl", "container_run_and_commit", "container_run_and_extract")
-load("@com_github_lanofdoom_steamcmd//:defs.bzl", "steam_depot_layer")
+
+#
+# Build Server Base Image
+#
 
 download_pkgs(
     name = "server_deps",
@@ -27,12 +30,28 @@ install_pkgs(
 # Build Source SDK Base 2006 Dedicated Server Layer
 #
 
-steam_depot_layer(
+container_run_and_extract(
+    name = "download_srcds",
+    commands = [
+        "sed -i -e's/ main/ main non-free/g' /etc/apt/sources.list",
+        "echo steam steam/question select 'I AGREE' | debconf-set-selections",
+        "echo steam steam/license note '' | debconf-set-selections",
+        "apt update",
+        "apt install -y steamcmd",
+        "/usr/games/steamcmd +@sSteamCmdForcePlatformType windows +login anonymous +force_install_dir /opt/game +app_update 205 +app_update 215 validate +quit",
+        "rm -rf /opt/game/steamapps",
+        "chown -R nobody:root /opt/game",
+        "tar -czvf /archive.tar.gz /opt/game/",
+    ],
+    extract_file = "/archive.tar.gz",
+    image = ":server_base.tar",
+)
+
+container_layer(
     name = "srcds",
-    os = "windows",
-    app = "205",
-    depot = "215",
-    directory = "/opt/game",
+    tars = [
+        ":download_srcds/archive.tar.gz",
+    ],
 )
 
 #
@@ -75,8 +94,7 @@ container_layer(
 container_image(
     name = "sourcemod_container",
     base = ":server_base",
-    directory = "/opt/game/hidden",
-    tars = [
+    files = [
         "@metamod//file",
         "@sourcemod//file",
     ],
@@ -85,6 +103,11 @@ container_image(
 container_run_and_extract(
     name = "build_sourcemod",
     commands = [
+        "apt-get update",
+        "apt-get install -y unzip",
+        "mkdir -p /opt/game/hidden",
+        "unzip metamod.zip -d /opt/game/hidden",
+        "unzip sourcemod.zip -d /opt/game/hidden",
         "cd /opt/game/hidden/addons/sourcemod",
         "mv plugins/basevotes.smx plugins/disabled/basevotes.smx",
         "mv plugins/funcommands.smx plugins/disabled/funcommands.smx",
@@ -108,7 +131,40 @@ container_layer(
 )
 
 #
-# Build LAN of DOOM Plugin and Config Layer
+# Build LAN of DOOM Plugin Layer
+#
+
+container_image(
+    name = "plugin_container",
+    base = ":server_base",
+    files = [
+        "@auth_by_steam_group//file",
+    ],
+)
+
+container_run_and_extract(
+    name = "build_plugin",
+    commands = [
+        "apt-get update",
+        "apt-get install -y unzip",
+        "mkdir -p /opt/game/hidden",
+        "unzip auth_by_steam_group.zip -d /opt/game/hidden",
+        "chown -R nobody:root /opt",
+        "tar -czvf /archive.tar.gz /opt",
+    ],
+    extract_file = "/archive.tar.gz",
+    image = ":plugin_container.tar",
+)
+
+container_layer(
+    name = "lanofdoom_plugins",
+    tars = [
+        ":build_plugin/archive.tar.gz",
+    ],
+)
+
+#
+# Build LAN of DOOM Plugin and Config Layers
 #
 
 container_layer(
@@ -135,21 +191,12 @@ container_layer(
     ],
 )
 
-container_layer(
-    name = "lanofdoom_server_plugins",
-    directory = "/opt/game/hidden",
-    tars = [
-        "@auth_by_steam_group//file",
-    ],
-)
-
 container_image(
     name = "config_container",
     base = ":server_base",
     layers = [
         ":lanofdoom_server_config",
         ":lanofdoom_server_entrypoint",
-        ":lanofdoom_server_plugins",
         ":lanofdoom_server_rtv_config",
     ],
 )
@@ -165,7 +212,7 @@ container_run_and_extract(
 )
 
 container_layer(
-    name = "lanofdoom",
+    name = "lanofdoom_config",
     tars = [
         ":build_lanofdoom/archive.tar.gz",
     ],
@@ -194,9 +241,8 @@ container_image(
         ":srcds",
         ":hidden",
         ":sourcemod",
-        ":lanofdoom_server_config",
-        ":lanofdoom_server_plugins",
-        ":lanofdoom_server_entrypoint",
+        ":lanofdoom_config",
+        ":lanofdoom_plugins",
     ],
     workdir = "/opt/game",
 )
