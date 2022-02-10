@@ -253,6 +253,6 @@ container_push(
     format = "Docker",
     image = ":server_image",
     registry = "ghcr.io",
-    repository = "lanofdoom/hidden-server",
+    repository = "lanofdoom/hiddensource-server",
     tag = "latest",
 )
