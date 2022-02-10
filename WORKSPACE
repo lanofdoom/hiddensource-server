@@ -28,7 +28,7 @@ load("@io_bazel_rules_docker//container:container.bzl", "container_pull")
 http_file(
     name = "auth_by_steam_group",
     downloaded_file_path = "auth_by_steam_group.zip",
-    sha256 = "102ac24bc229f1e08164d2b63358703106f1a6bd19d9c6cd47936b259c61873e",
+    sha256 = "2ce9f93038773affe8d7c7acc4fe156735f095f287889cafeb07fb78f512007d",
     urls = ["https://lanofdoom.github.io/auth-by-steam-group/releases/v2.3.0/auth_by_steam_group.zip"],
 )
 
