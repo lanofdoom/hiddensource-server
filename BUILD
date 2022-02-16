@@ -4,28 +4,6 @@ load("@io_bazel_rules_docker//docker/package_managers:install_pkgs.bzl", "instal
 load("@io_bazel_rules_docker//docker/util:run.bzl", "container_run_and_commit", "container_run_and_extract")
 
 #
-# Build Server Base Image
-#
-
-download_pkgs(
-    name = "server_deps",
-    image_tar = "@base_image//image",
-    packages = [
-        "ca-certificates",
-        "wine",
-        "xvfb",
-    ],
-)
-
-install_pkgs(
-    name = "server_base",
-    image_tar = "@base_image//image",
-    installables_tar = ":server_deps.tar",
-    installation_cleanup_commands = "rm -rf /var/lib/apt/lists/*",
-    output_image_name = "server_base",
-)
-
-#
 # Build Source SDK Base 2006 Dedicated Server Layer
 #
 
@@ -36,14 +14,14 @@ container_run_and_extract(
         "echo steam steam/question select 'I AGREE' | debconf-set-selections",
         "echo steam steam/license note '' | debconf-set-selections",
         "apt update",
-        "apt install -y steamcmd",
+        "apt install -y ca-certificates steamcmd",
         "/usr/games/steamcmd +@sSteamCmdForcePlatformType windows +login anonymous +force_install_dir /opt/game +app_update 205 +app_update 215 validate +quit",
         "rm -rf /opt/game/steamapps",
         "chown -R nobody:root /opt/game",
         "tar -czvf /archive.tar.gz /opt/game/",
     ],
     extract_file = "/archive.tar.gz",
-    image = ":server_base.tar",
+    image = "@base_image//image",
 )
 
 container_layer(
@@ -59,7 +37,7 @@ container_layer(
 
 container_image(
     name = "hidden_container",
-    base = ":server_base",
+    base = "@base_image//image",
     files = [
         "@hidden//file",
     ],
@@ -92,7 +70,7 @@ container_layer(
 
 container_image(
     name = "sourcemod_container",
-    base = ":server_base",
+    base = "@base_image//image",
     files = [
         ":metamod.vdf",
         "@metamod//file",
@@ -137,7 +115,7 @@ container_layer(
 
 container_image(
     name = "plugin_container",
-    base = ":server_base",
+    base = "@base_image//image",
     files = [
         "@auth_by_steam_group//file",
     ],
@@ -194,7 +172,7 @@ container_layer(
 
 container_image(
     name = "config_container",
-    base = ":server_base",
+    base = "@base_image//image",
     layers = [
         ":lanofdoom_server_config",
         ":lanofdoom_server_entrypoint",
@@ -217,6 +195,28 @@ container_layer(
     tars = [
         ":build_lanofdoom/archive.tar.gz",
     ],
+)
+
+#
+# Build Server Base Image
+#
+
+download_pkgs(
+    name = "server_deps",
+    image_tar = "@base_image//image",
+    packages = [
+        "ca-certificates",
+        "wine",
+        "xvfb",
+    ],
+)
+
+install_pkgs(
+    name = "server_base",
+    image_tar = "@base_image//image",
+    installables_tar = ":server_deps.tar",
+    installation_cleanup_commands = "rm -rf /var/lib/apt/lists/*",
+    output_image_name = "server_base",
 )
 
 #
