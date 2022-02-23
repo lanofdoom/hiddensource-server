@@ -2,37 +2,32 @@ load("@io_bazel_rules_docker//container:container.bzl", "container_image", "cont
 load("@io_bazel_rules_docker//docker/package_managers:download_pkgs.bzl", "download_pkgs")
 load("@io_bazel_rules_docker//docker/package_managers:install_pkgs.bzl", "install_pkgs")
 load("@io_bazel_rules_docker//docker/util:run.bzl", "container_run_and_commit", "container_run_and_extract")
+load("@com_github_lanofdoom_steamcmd//:defs.bzl", "steam_depot_layer")
 
 #
-# Build Source SDK Base 2006 Dedicated Server Layer
+# Source Dedicated Server Layer
 #
 
-container_run_and_extract(
-    name = "download_srcds",
-    commands = [
-        "sed -i -e's/ main/ main non-free/g' /etc/apt/sources.list",
-        "echo steam steam/question select 'I AGREE' | debconf-set-selections",
-        "echo steam steam/license note '' | debconf-set-selections",
-        "apt update",
-        "apt install -y ca-certificates steamcmd",
-        "/usr/games/steamcmd +@sSteamCmdForcePlatformType windows +login anonymous +force_install_dir /opt/game +app_update 205 +app_update 215 validate +quit",
-        "rm -rf /opt/game/steamapps",
-        "chown -R nobody:root /opt/game",
-        "tar -czvf /archive.tar.gz /opt/game/",
-    ],
-    extract_file = "/archive.tar.gz",
-    image = "@base_image//image",
-)
-
-container_layer(
+steam_depot_layer(
     name = "srcds",
-    tars = [
-        ":download_srcds/archive.tar.gz",
-    ],
+    app = "205",
+    directory = "/opt/game",
+    os = "windows",
 )
 
 #
-# Build Hidden Layer
+# Source SDK Base 2006 Layer
+#
+
+steam_depot_layer(
+    name = "sdk",
+    app = "215",
+    directory = "/opt/game",
+    os = "windows",
+)
+
+#
+# Hidden Layer
 #
 
 container_image(
@@ -172,7 +167,7 @@ container_layer(
 )
 
 #
-# Build Server Base Image
+# Server Base Image
 #
 
 download_pkgs(
@@ -217,6 +212,7 @@ container_image(
     ],
     layers = [
         ":srcds",
+        ":sdk",
         ":hidden",
         ":metamod",
         ":sourcemod",

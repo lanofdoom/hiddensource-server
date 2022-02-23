@@ -22,6 +22,29 @@ container_deps()
 load("@io_bazel_rules_docker//container:container.bzl", "container_pull")
 
 #
+# Steam Dependencies
+#
+
+http_archive(
+    name = "com_github_lanofdoom_steamcmd",
+    sha256 = "ba08a3cea3b1534bee6a6b1e625f34aa3c019d6f0cfb9bdeeade201f250776a1",
+    strip_prefix = "steamcmd-bbeb7373f047aa3271d9f3442bc7985a6049f879",
+    urls = ["https://github.com/lanofdoom/steamcmd/archive/bbeb7373f047aa3271d9f3442bc7985a6049f879.zip"],
+)
+
+load("@com_github_lanofdoom_steamcmd//:repositories.bzl", "steamcmd_repos")
+
+steamcmd_repos()
+
+load("@com_github_lanofdoom_steamcmd//:deps.bzl", "steamcmd_deps")
+
+steamcmd_deps()
+
+load("@com_github_lanofdoom_steamcmd//:nugets.bzl", "steamcmd_nugets")
+
+steamcmd_nugets()
+
+#
 # Server Dependencies
 #
 
