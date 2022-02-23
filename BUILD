@@ -50,7 +50,6 @@ container_run_and_extract(
         "apt-get install -y unzip",
         "mkdir -p /opt/game",
         "unzip hidden.zip -d /opt/game",
-        "chown -R nobody:root /opt",
         "tar -czvf /archive.tar.gz /opt",
     ],
     extract_file = "/archive.tar.gz",
@@ -65,37 +64,56 @@ container_layer(
 )
 
 #
-# Build Sourcemod Layer
+# MetaMod Layer
+#
+
+container_image(
+    name = "metamod_container",
+    base = "@base_image//image",
+    files = [
+        "@metamod//file",
+    ],
+)
+
+container_run_and_extract(
+    name = "metamod_extract",
+    commands = [
+        "apt-get update",
+        "apt-get install -y unzip",
+        "mkdir -p /opt/game/hidden",
+        "unzip metamod.zip -d /opt/game/hidden",
+        "tar -czvf /archive.tar.gz /opt",
+    ],
+    extract_file = "/archive.tar.gz",
+    image = ":metamod_container.tar",
+)
+
+container_layer(
+    name = "metamod",
+    tars = [
+        ":metamod_extract/archive.tar.gz",
+    ],
+)
+
+#
+# SourceMod Layer
 #
 
 container_image(
     name = "sourcemod_container",
     base = "@base_image//image",
     files = [
-        ":metamod.vdf",
-        "@metamod//file",
         "@sourcemod//file",
     ],
 )
 
 container_run_and_extract(
-    name = "build_sourcemod",
+    name = "sourcemod_extract",
     commands = [
         "apt-get update",
         "apt-get install -y unzip",
         "mkdir -p /opt/game/hidden",
-        "unzip metamod.zip -d /opt/game/hidden",
         "unzip sourcemod.zip -d /opt/game/hidden",
-        "cd /opt/game/hidden/addons/sourcemod",
-        "mv plugins/basevotes.smx plugins/disabled/basevotes.smx",
-        "mv plugins/funcommands.smx plugins/disabled/funcommands.smx",
-        "mv plugins/funvotes.smx plugins/disabled/funvotes.smx",
-        "mv plugins/playercommands.smx plugins/disabled/playercommands.smx",
-        "mv plugins/disabled/mapchooser.smx plugins/mapchooser.smx",
-        "mv plugins/disabled/rockthevote.smx plugins/rockthevote.smx",
-        "mv plugins/disabled/nominations.smx plugins/nominations.smx",
-        "mv /metamod.vdf /opt/game/hidden/addons/metamod.vdf",
-        "chown -R nobody:root /opt",
         "tar -czvf /archive.tar.gz /opt",
     ],
     extract_file = "/archive.tar.gz",
@@ -105,16 +123,16 @@ container_run_and_extract(
 container_layer(
     name = "sourcemod",
     tars = [
-        ":build_sourcemod/archive.tar.gz",
+        ":sourcemod_extract/archive.tar.gz",
     ],
 )
 
 #
-# Build LAN of DOOM Plugin Layer
+# Authorization Layer
 #
 
 container_image(
-    name = "plugin_container",
+    name = "authorization_container",
     base = "@base_image//image",
     files = [
         "@auth_by_steam_group//file",
@@ -122,78 +140,34 @@ container_image(
 )
 
 container_run_and_extract(
-    name = "build_plugin",
+    name = "authorization_extract",
     commands = [
         "apt-get update",
         "apt-get install -y unzip",
         "mkdir -p /opt/game/hidden",
         "unzip auth_by_steam_group.zip -d /opt/game/hidden",
-        "chown -R nobody:root /opt",
         "tar -czvf /archive.tar.gz /opt",
     ],
     extract_file = "/archive.tar.gz",
-    image = ":plugin_container.tar",
+    image = ":authorization_container.tar",
 )
 
 container_layer(
-    name = "lanofdoom_plugins",
+    name = "authorization",
     tars = [
-        ":build_plugin/archive.tar.gz",
+        ":authorization_extract/archive.tar.gz",
     ],
 )
 
 #
-# Build LAN of DOOM Plugin and Config Layers
+# Config Layer
 #
 
 container_layer(
-    name = "lanofdoom_server_config",
+    name = "config",
     directory = "/opt/game/hidden/cfg",
     files = [
         ":server.cfg",
-    ],
-)
-
-container_layer(
-    name = "lanofdoom_server_rtv_config",
-    directory = "/opt/game/hidden/cfg/sourcemod",
-    files = [
-        ":rtv.cfg",
-    ]
-)
-
-container_layer(
-    name = "lanofdoom_server_entrypoint",
-    directory = "/opt/game",
-    files = [
-        ":entrypoint.sh",
-    ],
-)
-
-container_image(
-    name = "config_container",
-    base = "@base_image//image",
-    layers = [
-        ":lanofdoom_server_config",
-        ":lanofdoom_server_entrypoint",
-        ":lanofdoom_server_rtv_config",
-    ],
-)
-
-container_run_and_extract(
-    name = "build_lanofdoom",
-    commands = [
-        "chown -R nobody:root /opt",
-        "tar -czvf /archive.tar.gz /opt",
-    ],
-    extract_file = "/archive.tar.gz",
-    image = ":config_container.tar",
-)
-
-container_layer(
-    name = "lanofdoom_config",
-    tars = [
-        ":build_lanofdoom/archive.tar.gz",
     ],
 )
 
@@ -226,7 +200,7 @@ install_pkgs(
 container_image(
     name = "server_image",
     base = ":server_base",
-    entrypoint = ["/opt/game/entrypoint.sh"],
+    entrypoint = ["/entrypoint.sh"],
     env = {
         "HIDDEN_ADMIN": "",
         "HIDDEN_HOSTNAME": "",
@@ -238,14 +212,17 @@ container_image(
         "STEAM_GROUP_ID": "",
         "STEAM_API_KEY": "",
     },
+    files = [
+        ":entrypoint.sh",
+    ],
     layers = [
         ":srcds",
         ":hidden",
+        ":metamod",
         ":sourcemod",
-        ":lanofdoom_config",
-        ":lanofdoom_plugins",
+        ":authorization",
+        ":config",
     ],
-    workdir = "/opt/game",
 )
 
 container_push(
