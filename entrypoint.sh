@@ -1,16 +1,20 @@
 #!/bin/bash -ue
-[ -z "${HIDDEN_ADMIN}" ] || echo "${HIDDEN_ADMIN} \"99:z\"" > hidden/addons/sourcemod/configs/admins_simple.ini
 
-[ -z "${HIDDEN_MOTD}" ] || echo "${HIDDEN_MOTD}" > hidden/motd.txt
+[ -z "${HIDDEN_MOTD}" ] || echo "${HIDDEN_MOTD}" > /opt/game/hidden/motd.txt
 
 #  Hack to make auth plugin load properly
-cp hidden/addons/sourcemod/extensions/auth_by_steam_group.ext.1.ep1.dll hidden/addons/sourcemod/extensions/auth_by_steam_group.ext.dll
+cp /opt/game/hidden/addons/sourcemod/extensions/auth_by_steam_group.ext.1.ep1.dll /opt/game/hidden/addons/sourcemod/extensions/auth_by_steam_group.ext.dll
 
 # Generate mapcycle
-ls hidden/maps/*.bsp | grep -v tutorial | sed -e 's/.*\/\([^\/]*\).bsp/\1/' > hidden/cfg/mapcycle.txt
+ls /opt/game/hidden/maps/*.bsp | grep -v tutorial | sed -e 's/.*\/\([^\/]*\).bsp/\1/' > /opt/game/hidden/cfg/mapcycle.txt
 
 # Update maplists
-sed -i 's|addons/sourcemod/configs/adminmenu_maplist.ini|default|g' hidden/addons/sourcemod/configs/maplists.cfg
+sed -i 's|addons/sourcemod/configs/adminmenu_maplist.ini|default|g' /opt/game/hidden/addons/sourcemod/configs/maplists.cfg
+
+# Touch these files to prevent sourcemod from creating them and overriding
+# values sent in server.cfg
+touch /opt/game/hidden/cfg/sourcemod/mapchooser.cfg
+touch /opt/game/hidden/cfg/sourcemod/rtv.cfg
 
 # Set terminal
 export TERM=xterm
@@ -18,6 +22,12 @@ export TERM=xterm
 # Start display server
 Xvfb :1 -screen 0 800x600x16 &
 sleep 1s
+
+# Create temporary wine root
+export WINEPREFIX=$(mktemp -d)
+
+# CD into game directory
+cd /opt/game
 
 # Configure wine and start game
 WINEARCH="win32" wine winecfg
