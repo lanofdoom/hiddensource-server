@@ -30,31 +30,12 @@ steam_depot_layer(
 # Hidden Layer
 #
 
-container_image(
-    name = "hidden_container",
-    base = "@base_image//image",
-    files = [
-        "@hidden//file",
-    ],
-)
-
-container_run_and_extract(
-    name = "hidden_extract",
-    commands = [
-        "apt-get update",
-        "apt-get install -y unzip",
-        "mkdir -p /opt/game",
-        "unzip hidden.zip -d /opt/game",
-        "tar -czvf /archive.tar.gz /opt",
-    ],
-    extract_file = "/archive.tar.gz",
-    image = ":hidden_container.tar",
-)
-
 container_layer(
     name = "hidden",
-    tars = [
-        ":hidden_extract/archive.tar.gz",
+    data_path = "./../hidden",
+    directory = "/opt/game",
+    files = [
+        "@hidden//:all",
     ],
 )
 
@@ -62,31 +43,12 @@ container_layer(
 # MetaMod Layer
 #
 
-container_image(
-    name = "metamod_container",
-    base = "@base_image//image",
-    files = [
-        "@metamod//file",
-    ],
-)
-
-container_run_and_extract(
-    name = "metamod_extract",
-    commands = [
-        "apt-get update",
-        "apt-get install -y unzip",
-        "mkdir -p /opt/game/hidden",
-        "unzip metamod.zip -d /opt/game/hidden",
-        "tar -czvf /archive.tar.gz /opt",
-    ],
-    extract_file = "/archive.tar.gz",
-    image = ":metamod_container.tar",
-)
-
 container_layer(
     name = "metamod",
-    tars = [
-        ":metamod_extract/archive.tar.gz",
+    data_path = "./../metamod",
+    directory = "/opt/game/hidden",
+    files = [
+        "@metamod//:all",
     ],
 )
 
@@ -94,31 +56,12 @@ container_layer(
 # SourceMod Layer
 #
 
-container_image(
-    name = "sourcemod_container",
-    base = "@base_image//image",
-    files = [
-        "@sourcemod//file",
-    ],
-)
-
-container_run_and_extract(
-    name = "sourcemod_extract",
-    commands = [
-        "apt-get update",
-        "apt-get install -y unzip",
-        "mkdir -p /opt/game/hidden",
-        "unzip sourcemod.zip -d /opt/game/hidden",
-        "tar -czvf /archive.tar.gz /opt",
-    ],
-    extract_file = "/archive.tar.gz",
-    image = ":sourcemod_container.tar",
-)
-
 container_layer(
     name = "sourcemod",
-    tars = [
-        ":sourcemod_extract/archive.tar.gz",
+    data_path = "./../sourcemod",
+    directory = "/opt/game/hidden",
+    files = [
+        "@sourcemod//:all",
     ],
 )
 
@@ -126,31 +69,12 @@ container_layer(
 # Authorization Layer
 #
 
-container_image(
-    name = "authorization_container",
-    base = "@base_image//image",
-    files = [
-        "@auth_by_steam_group//file",
-    ],
-)
-
-container_run_and_extract(
-    name = "authorization_extract",
-    commands = [
-        "apt-get update",
-        "apt-get install -y unzip",
-        "mkdir -p /opt/game/hidden",
-        "unzip auth_by_steam_group.zip -d /opt/game/hidden",
-        "tar -czvf /archive.tar.gz /opt",
-    ],
-    extract_file = "/archive.tar.gz",
-    image = ":authorization_container.tar",
-)
-
 container_layer(
     name = "authorization",
-    tars = [
-        ":authorization_extract/archive.tar.gz",
+    data_path = "./../auth_by_steam_group",
+    directory = "/opt/game/hidden",
+    files = [
+        "@auth_by_steam_group//:all",
     ],
 )
 
