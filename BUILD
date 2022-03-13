@@ -83,7 +83,7 @@ container_layer(
 
 container_layer(
     name = "config",
-    directory = "/opt/game/hidden/cfg",
+    directory = "/opt/game/hidden/cfg/templates",
     files = [
         ":server.cfg",
     ],
