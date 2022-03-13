@@ -16,6 +16,11 @@ sed -i 's|addons/sourcemod/configs/adminmenu_maplist.ini|default|g' /opt/game/hi
 touch /opt/game/hidden/cfg/sourcemod/mapchooser.cfg
 touch /opt/game/hidden/cfg/sourcemod/rtv.cfg
 
+# Update server config file
+cp /opt/game/hidden/cfg/templates/server.cfg /opt/game/hidden/cfg/server.cfg
+echo "// Added by entrypoint.sh" >> /opt/game/hidden/cfg/server.cfg
+echo "hostname \"$HIDDEN_HOSTNAME\"" >> /opt/game/hidden/cfg/server.cfg
+
 # Set terminal
 export TERM=xterm
 
@@ -39,7 +44,6 @@ DISPLAY=":1.0" wine start srcds.exe \
     -tickrate 100 \
     +ip 0.0.0.0 \
     +map "$HIDDEN_MAP" \
-    +hostname "$HIDDEN_HOSTNAME" \
     +rcon_password "$RCON_PASSWORD" \
     +sv_password "$HIDDEN_PASSWORD" \
     +sm_auth_by_steam_group_group_id "$STEAM_GROUP_ID" \
