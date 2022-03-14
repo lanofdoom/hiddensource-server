@@ -4,6 +4,17 @@ load("@io_bazel_rules_docker//docker/package_managers:install_pkgs.bzl", "instal
 load("@com_github_lanofdoom_steamcmd//:defs.bzl", "steam_depot_layer")
 
 #
+# Source Dedicated Server Layer
+#
+
+steam_depot_layer(
+    name = "srcds",
+    app = "205",
+    directory = "/opt/game",
+    os = "windows",
+)
+
+#
 # Source SDK Base 2006 Layer
 #
 
@@ -123,6 +134,7 @@ container_image(
         ":entrypoint.sh",
     ],
     layers = [
+        ":srcds",
         ":sdk",
         ":hidden",
         ":metamod",
