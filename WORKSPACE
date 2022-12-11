@@ -26,9 +26,9 @@ load("@io_bazel_rules_docker//container:container.bzl", "container_pull")
 
 http_archive(
     name = "com_github_lanofdoom_steamcmd",
-    sha256 = "ba08a3cea3b1534bee6a6b1e625f34aa3c019d6f0cfb9bdeeade201f250776a1",
-    strip_prefix = "steamcmd-bbeb7373f047aa3271d9f3442bc7985a6049f879",
-    urls = ["https://github.com/lanofdoom/steamcmd/archive/bbeb7373f047aa3271d9f3442bc7985a6049f879.zip"],
+    sha256 = "dee49972a0cc7be24e96a8e28969fd3f23f776f0a6af9e0c32b97a7b52a933fc",
+    strip_prefix = "steamcmd-26e89bc225507c296f5805c703aa430d0a2365a6",
+    urls = ["https://github.com/lanofdoom/steamcmd/archive/26e89bc225507c296f5805c703aa430d0a2365a6.zip"],
 )
 
 load("@com_github_lanofdoom_steamcmd//:repositories.bzl", "steamcmd_repos")
