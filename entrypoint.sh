@@ -8,8 +8,8 @@ cp /opt/game/hidden/addons/sourcemod/extensions/auth_by_steam_group.ext.1.ep1.dl
 # Generate mapcycle
 ls /opt/game/hidden/maps/*.bsp | grep -v tutorial | sed -e 's/.*\/\([^\/]*\).bsp/\1/' > /opt/game/hidden/cfg/mapcycle.txt
 
-# Update maplists
-sed -i 's|addons/sourcemod/configs/adminmenu_maplist.ini|default|g' /opt/game/hidden/addons/sourcemod/configs/maplists.cfg
+# Touch this file to workaround an issue in sourcemod
+touch /opt/game/hidden/addons/sourcemod/configs/maplists.cfg
 
 # Touch these files to prevent sourcemod from creating them and overriding
 # values sent in server.cfg

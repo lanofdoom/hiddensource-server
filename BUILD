@@ -128,7 +128,6 @@ container_image(
     base = ":server_base",
     entrypoint = ["/entrypoint.sh"],
     env = {
-        "HIDDEN_ADMIN": "",
         "HIDDEN_HOSTNAME": "",
         "HIDDEN_MAP": "hdn_traindepot",
         "HIDDEN_MOTD": "",
