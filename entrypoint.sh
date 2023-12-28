@@ -1,5 +1,9 @@
 #!/bin/bash -ue
 
+# Install auth_by_steam_group dependencies
+apt-get update && apt-get install -y ca-certificates wine xvfb
+
+# Set MOTD
 [ -z "${HIDDEN_MOTD}" ] || echo "${HIDDEN_MOTD}" > /opt/game/hidden/motd.txt
 
 #  Hack to make auth plugin load properly

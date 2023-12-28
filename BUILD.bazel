@@ -1,0 +1,122 @@
+load("@rules_pkg//:pkg.bzl", "pkg_tar")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_push", "oci_tarball")
+
+#
+# Source Dedicated Server Layer
+#
+
+pkg_tar(
+    name = "srcds_layer",
+    srcs = ["@srcds//:files"],
+    package_dir = "/opt/game",
+)
+
+#
+# Source SDK Base 2006 Layer
+#
+
+pkg_tar(
+    name = "sdk_layer",
+    srcs = ["@sdk//:files"],
+    package_dir = "/opt/game",
+)
+
+#
+# Hidden Layer
+#
+
+pkg_tar(
+    name = "hidden_layer",
+    srcs = ["@hidden//:all"],
+    package_dir = "/opt/game",
+)
+
+#
+# MetaMod Layer
+#
+
+pkg_tar(
+    name = "metamod_layer",
+    srcs = ["@metamod//:all"],
+    package_dir = "/opt/game/hidden",
+)
+
+pkg_tar(
+    name = "metamod_vdf_layer",
+    srcs = [":metamod.vdf"],
+    package_dir = "/opt/game/hidden/addons",
+)
+
+#
+# SourceMod Layer
+#
+
+pkg_tar(
+    name = "sourcemod_layer",
+    srcs = ["@sourcemod//:all"],
+    empty_dirs = ["/opt/game/hidden/addons/souremod/configs"],
+    package_dir = "/opt/game/hidden",
+)
+
+#
+# Authorization Layer
+#
+
+pkg_tar(
+    name = "authorization_layer",
+    package_dir = "/opt/game/hidden",
+    srcs = ["@auth_by_steam_group//:all"],
+)
+
+#
+# Config Layer
+#
+
+pkg_tar(
+    name = "config_layer",
+    srcs = [":server.cfg"],
+    package_dir = "/opt/game/hidden/cfg/templates",
+)
+
+#
+# Final Image
+#
+
+oci_image(
+    name = "image",
+    base = "@debian",
+    entrypoint = ["/entrypoint.sh"],
+    env = {
+        "HIDDEN_HOSTNAME": "",
+        "HIDDEN_MAP": "hdn_traindepot",
+        "HIDDEN_MOTD": "",
+        "HIDDEN_PASSWORD": "",
+        "HIDDEN_PORT": "27015",
+        "RCON_PASSWORD": "",
+        "STEAM_GROUP_ID": "",
+        "STEAM_API_KEY": "",
+    },
+    tars = [
+        ":srcds_layer",
+        ":sdk_layer",
+        ":hidden_layer",
+        ":metamod_layer",
+        ":metamod_vdf_layer",
+        ":sourcemod_layer",
+        ":authorization_layer",
+        ":config_layer",
+    ],
+)
+
+oci_tarball(
+    name = "image_tarball",
+    image = ":image",
+    repo_tags = ["hiddensource-server:bazel"],
+)
+
+oci_push(
+    name = "image_push",
+    image = ":image",
+    remote_tags = ["latest"],
+    repository = "ghcr.io/lanofdoom/hiddensource-server",
+)

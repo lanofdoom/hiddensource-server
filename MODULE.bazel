@@ -1,0 +1,31 @@
+module(name = "hiddensource_server")
+
+bazel_dep(name = "rules_pkg", version = "0.9.1")
+bazel_dep(name = "rules_oci", version = "1.4.3")
+bazel_dep(name = "rules_steam")
+
+git_override(
+    module_name = "rules_steam",
+    commit = "2423ec2575a5f27cbefcc0b5d7a10126ccc5ce30",
+    remote = "https://github.com/lanofdoom/rules_steam.git",
+)
+
+steam = use_extension("@rules_steam//:steam.bzl", "steam")
+steam.app(name = "srcds", app = "205", os = "windows")
+steam.app(name = "sdk", app = "215", os = "windows")
+use_repo(steam, "srcds", "sdk")
+
+oci = use_extension("@rules_oci//oci:extensions.bzl", "oci")
+
+oci.pull(
+    name = "debian",
+    tag = "bookworm-slim",
+    image = "debian",
+    platforms = [
+        "linux/amd64",
+    ],
+)
+use_repo(oci, "debian")
+
+repos = use_extension("//:repos.bzl", "repos_bzlmod")
+use_repo(repos, "auth_by_steam_group", "hidden", "metamod", "sourcemod")
