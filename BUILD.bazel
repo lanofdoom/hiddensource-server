@@ -29,6 +29,7 @@ pkg_tar(
     name = "hidden_layer",
     srcs = ["@hidden//:all"],
     package_dir = "/opt/game",
+    strip_prefix = "external/_main~repos_bzlmod~hidden",
 )
 
 #
@@ -39,6 +40,7 @@ pkg_tar(
     name = "metamod_layer",
     srcs = ["@metamod//:all"],
     package_dir = "/opt/game/hidden",
+    strip_prefix = "external/_main~repos_bzlmod~metamod",
 )
 
 pkg_tar(
@@ -56,6 +58,7 @@ pkg_tar(
     srcs = ["@sourcemod//:all"],
     empty_dirs = ["/opt/game/hidden/addons/sourcemod/configs"],
     package_dir = "/opt/game/hidden",
+    strip_prefix = "external/_main~repos_bzlmod~sourcemod",
 )
 
 #
@@ -66,6 +69,7 @@ pkg_tar(
     name = "authorization_layer",
     package_dir = "/opt/game/hidden",
     srcs = ["@auth_by_steam_group//:all"],
+    strip_prefix = "external/_main~repos_bzlmod~auth_by_steam_group",
 )
 
 #
