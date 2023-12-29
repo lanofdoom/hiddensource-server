@@ -94,7 +94,7 @@ pkg_tar(
 
 oci_image(
     name = "image",
-    base = "@debian",
+    base = "@debian_i386",
     entrypoint = ["/entrypoint.sh"],
     env = {
         "HIDDEN_HOSTNAME": "",

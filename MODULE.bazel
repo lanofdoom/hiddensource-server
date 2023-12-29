@@ -18,14 +18,11 @@ use_repo(steam, "srcds", "sdk")
 oci = use_extension("@rules_oci//oci:extensions.bzl", "oci")
 
 oci.pull(
-    name = "debian",
+    name = "debian_i386",
     tag = "bookworm-slim",
-    image = "debian",
-    platforms = [
-        "linux/amd64",
-    ],
+    image = "docker.io/i386/debian",
 )
-use_repo(oci, "debian")
+use_repo(oci, "debian_i386")
 
 repos = use_extension("//:repos.bzl", "repos_bzlmod")
 use_repo(repos, "auth_by_steam_group", "hidden", "metamod", "sourcemod")
