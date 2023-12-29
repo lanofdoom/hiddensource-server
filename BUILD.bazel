@@ -54,7 +54,7 @@ pkg_tar(
 pkg_tar(
     name = "sourcemod_layer",
     srcs = ["@sourcemod//:all"],
-    empty_dirs = ["/opt/game/hidden/addons/souremod/configs"],
+    empty_dirs = ["/opt/game/hidden/addons/sourcemod/configs"],
     package_dir = "/opt/game/hidden",
 )
 
